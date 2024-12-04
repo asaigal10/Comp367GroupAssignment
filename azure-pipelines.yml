@@ -1,9 +1,99 @@
 trigger:
-- main
-
+- main  
 pool:
-  name: 'default'
+  name: 'default'  
 
 steps:
+# Step 1: Checkout the Code
 - checkout: self
   displayName: "Checkout the Code Repository"
+
+# Step 2: Install Node.js
+- task: UseNode@1
+  displayName: "Setup Node.js Environment"
+  inputs:
+    versionSpec: '16.x'
+    checkLatest: true
+
+# Step 3: Install Dependencies for Backend
+- script: |
+    cd backend
+    npm install
+  displayName: "Install Backend Dependencies"
+
+# Step 4: Install Dependencies for Frontend
+- script: |
+    cd frontend
+    npm install
+  displayName: "Install Frontend Dependencies"
+
+# Step 5: Run Linting for Backend
+- script: |
+    cd backend
+    npm run lint
+  displayName: "Run Backend Linting"
+
+# Step 6: Run Linting for Frontend
+- script: |
+    cd frontend
+    npm run lint
+  displayName: "Run Frontend Linting"
+
+# Step 7: Run Backend Tests
+- script: |
+    cd backend
+    npm test -- --coverage
+  displayName: "Run Backend Tests"
+
+# Step 8: Run Frontend Tests
+- script: |
+    cd frontend
+    npm test -- --coverage
+  displayName: "Run Frontend Tests"
+
+# Step 9: Build Backend for Production
+- script: |
+    cd backend
+    npm run build
+  displayName: "Build Backend for Production"
+
+# Step 10: Build Frontend for Production
+- script: |
+    cd frontend
+    npm run build
+  displayName: "Build Frontend for Production"
+
+# Step 11: Publish Test Results
+- task: PublishTestResults@2
+  displayName: "Publish Test Results"
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/test-results.xml'
+    failTaskOnFailedTests: true
+
+# Step 12: Publish Code Coverage
+- task: PublishCodeCoverageResults@1
+  displayName: "Publish Code Coverage"
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/**/CoverageReport'
+
+# Step 13: Deploy Application (Placeholder)
+- script: |
+    echo "Deploying Backend and Frontend"
+    # Add deployment scripts for your chosen environment (e.g., Dev, QA, Production)
+  displayName: "Deploy Application"
+
+# Step 14: Publish Build Artifacts
+- task: PublishBuildArtifacts@1
+  displayName: "Publish Frontend Build Artifacts"
+  inputs:
+    PathtoPublish: 'frontend/build'  
+    ArtifactName: 'FrontendBuild'
+
+- task: PublishBuildArtifacts@1
+  displayName: "Publish Backend Build Artifacts"
+  inputs:
+    PathtoPublish: 'backend/build' 
+    ArtifactName: 'BackendBuild'
