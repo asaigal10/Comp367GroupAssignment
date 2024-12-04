@@ -1,63 +1,67 @@
 trigger:
-- main  # Triggers pipeline on commits to the main branch
+- main  
 
 pool:
-  name: default
+  name: 'default'  
 
-steps:
-# Step 1: Checkout Code
-- task: Checkout@1
-  displayName: "Checkout the Code Repository"
+stages:
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build Job'
+    steps:
+    - task: Checkout@1
+      displayName: 'Checkout Code from GitHub'
 
-# Step 2: Setup Node.js
-- task: UseNode@1
-  displayName: "Set up Node.js"
-  inputs:
-    versionSpec: '16.x'  # Ensure compatibility
-    checkLatest: true
+    - task: UseNode@1
+      displayName: 'Set up Node.js'
+      inputs:
+        versionSpec: '16.x'
+        checkLatest: true
 
-# Step 3: Install Backend Dependencies
-- script: |
-    cd StudentManagementApp/backend
-    npm install
-  displayName: "Install Backend Dependencies"
+    # Install Backend Dependencies
+    - script: |
+        cd StudentManagementApp/backend
+        npm install
+      displayName: 'Install Backend Dependencies'
 
-# Step 4: Install Frontend Dependencies
-- script: |
-    cd StudentManagementApp/frontend
-    npm install
-  displayName: "Install Frontend Dependencies"
+    # Install Frontend Dependencies
+    - script: |
+        cd StudentManagementApp/frontend
+        npm install
+      displayName: 'Install Frontend Dependencies'
 
-# Step 5: Build Frontend
-- script: |
-    cd StudentManagementApp/frontend
-    npm run build
-  displayName: "Build Frontend"
+    # Run Backend Tests with Coverage
+    - script: |
+        cd StudentManagementApp/backend
+        npm test -- --coverage
+      displayName: 'Run Backend Tests and Generate Coverage'
 
-# Step 6: Run Backend Tests with Coverage
-- script: |
-    cd StudentManagementApp/backend
-    npm test -- --coverage
-  displayName: "Run Backend Tests and Generate Coverage"
+    # Run Frontend Tests with Coverage
+    - script: |
+        cd StudentManagementApp/frontend
+        npm test -- --coverage
+      displayName: 'Run Frontend Tests and Generate Coverage'
 
-# Step 7: Run Frontend Tests with Coverage
-- script: |
-    cd StudentManagementApp/frontend
-    npm test -- --coverage
-  displayName: "Run Frontend Tests and Generate Coverage"
+    # Build Frontend
+    - script: |
+        cd StudentManagementApp/frontend
+        npm run build
+      displayName: 'Build Frontend'
 
-# Step 8: Publish Test Results
-- task: PublishTestResults@2
-  displayName: "Publish Test Results"
-  inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: '**/test-results.xml'
-    failTaskOnFailedTests: true
+    # Publish Test Results
+    - task: PublishTestResults@2
+      displayName: 'Publish Test Results'
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/test-results.xml'
+        failTaskOnFailedTests: true
 
-# Step 9: Publish Code Coverage
-- task: PublishCodeCoverageResults@1
-  displayName: "Publish Code Coverage"
-  inputs:
-    codeCoverageTool: 'cobertura'
-    summaryFileLocation: '**/coverage/cobertura-coverage.xml'
-    reportDirectory: '**/coverage'
+    # Publish Code Coverage Results
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish Code Coverage'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '**/coverage/cobertura-coverage.xml'
+        reportDirectory: '**/coverage'
