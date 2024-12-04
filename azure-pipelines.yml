@@ -2,7 +2,7 @@ trigger:
 - main  # Automatically triggers the pipeline on pushes to the main branch
 
 pool:
-  name: 'Self-Hosted'  # Ensure you have a valid agent pool
+  name: 'default' 
 
 variables:
   buildConfiguration: 'Release'
@@ -12,11 +12,11 @@ steps:
 - task: Checkout@1
   displayName: "Checkout the Code Repository"
 
-# Step 2: Install Node.js (Ensure a specific Node.js version is used)
+# Step 2: Install Node.js
 - task: UseNode@1
   displayName: "Setup Node.js"
   inputs:
-    versionSpec: '16.x'  # Use the required Node.js version (e.g., 16.x or 18.x)
+    versionSpec: '22.x'  
     checkLatest: true
 
 # Step 3: Install Dependencies for Backend
