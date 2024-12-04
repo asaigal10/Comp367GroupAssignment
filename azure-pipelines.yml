@@ -1,8 +1,8 @@
 trigger:
-- main  # Automatically triggers the pipeline on pushes to the main branch
+- main  # Triggers pipeline on commits to the main branch
 
 pool:
-  name: 'default'
+  vmImage: 'ubuntu-latest'
 
 steps:
 # Step 1: Checkout Code
@@ -13,36 +13,36 @@ steps:
 - task: UseNode@1
   displayName: "Set up Node.js"
   inputs:
-    versionSpec: '16.x'  # Adjust based on your project requirements
+    versionSpec: '16.x'  # Ensure compatibility
     checkLatest: true
 
 # Step 3: Install Backend Dependencies
 - script: |
-    cd backend
+    cd StudentManagementApp/backend
     npm install
   displayName: "Install Backend Dependencies"
 
 # Step 4: Install Frontend Dependencies
 - script: |
-    cd frontend
+    cd StudentManagementApp/frontend
     npm install
   displayName: "Install Frontend Dependencies"
 
 # Step 5: Build Frontend
 - script: |
-    cd frontend
+    cd StudentManagementApp/frontend
     npm run build
   displayName: "Build Frontend"
 
-# Step 6: Run Backend Tests and Generate Coverage
+# Step 6: Run Backend Tests with Coverage
 - script: |
-    cd backend
+    cd StudentManagementApp/backend
     npm test -- --coverage
   displayName: "Run Backend Tests and Generate Coverage"
 
-# Step 7: Run Frontend Tests and Generate Coverage
+# Step 7: Run Frontend Tests with Coverage
 - script: |
-    cd frontend
+    cd StudentManagementApp/frontend
     npm test -- --coverage
   displayName: "Run Frontend Tests and Generate Coverage"
 
@@ -54,7 +54,7 @@ steps:
     testResultsFiles: '**/test-results.xml'
     failTaskOnFailedTests: true
 
-# Step 9: Publish Code Coverage Report
+# Step 9: Publish Code Coverage
 - task: PublishCodeCoverageResults@1
   displayName: "Publish Code Coverage"
   inputs:
