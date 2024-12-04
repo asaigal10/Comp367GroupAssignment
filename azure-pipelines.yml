@@ -5,5 +5,5 @@ pool:
   name: 'default'
 
 steps:
-- script: echo "Pipeline Test"
-  displayName: "Testing Pipeline"
+- task: Checkout@1
+  displayName: "Checkout the Code Repository"
