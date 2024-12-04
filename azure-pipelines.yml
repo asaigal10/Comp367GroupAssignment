@@ -1,0 +1,101 @@
+trigger:
+- main  # Automatically triggers the pipeline on pushes to the main branch
+
+pool:
+  name: 'Self-Hosted'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+# Step 1: Checkout Code
+- task: Checkout@1
+  displayName: "Checkout the Code Repository"
+
+# Step 2: Install Node.js (Ensure a specific Node.js version is used)
+- task: UseNode@1
+  displayName: "Setup Node.js"
+  inputs:
+    versionSpec: '16.x'  # Use the required Node.js version (e.g., 16.x or 18.x)
+    checkLatest: true
+
+# Step 3: Install Dependencies for Backend
+- script: |
+    cd backend
+    npm install
+  displayName: "Install Backend Dependencies"
+
+# Step 4: Install Dependencies for Frontend
+- script: |
+    cd frontend
+    npm install
+  displayName: "Install Frontend Dependencies"
+
+# Step 5: Run Linting and Static Code Analysis with SonarQube
+- task: SonarQubePrepare@4
+  displayName: "Prepare SonarQube Analysis"
+  inputs:
+    SonarQube: 'SonarQubeConnection'  # Replace with your SonarQube service connection name
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '<YourProjectKey>'  # Replace with your unique project key
+    cliProjectName: '<YourProjectName>'  # Replace with your project name
+    cliProjectVersion: '1.0'
+
+- script: |
+    cd backend
+    npm run lint
+  displayName: "Run Backend Linting"
+
+- script: |
+    cd frontend
+    npm run lint
+  displayName: "Run Frontend Linting"
+
+- task: SonarQubeAnalyze@4
+  displayName: "Run SonarQube Analysis"
+
+- task: SonarQubePublish@4
+  displayName: "Publish SonarQube Results"
+  inputs:
+    pollingTimeoutSec: '300'
+
+# Step 6: Run Backend Tests and Generate Code Coverage
+- script: |
+    cd backend
+    npm run test -- --coverage
+  displayName: "Run Backend Tests and Generate Coverage"
+
+# Step 7: Run Frontend Tests and Generate Code Coverage
+- script: |
+    cd frontend
+    npm run test -- --coverage
+  displayName: "Run Frontend Tests and Generate Coverage"
+
+# Step 8: Publish Test Results
+- task: PublishTestResults@2
+  displayName: "Publish Test Results"
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/test-results.xml'
+    failTaskOnFailedTests: true
+
+# Step 9: Publish Code Coverage Report
+- task: PublishCodeCoverageResults@1
+  displayName: "Publish Code Coverage"
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/**/CoverageReport'
+
+# Step 10: Build Frontend for Production
+- script: |
+    cd frontend
+    npm run build
+  displayName: "Build Frontend for Production"
+
+# Step 11: Deploy Backend and Frontend
+- script: |
+    echo "Deploying Backend and Frontend"
+    # Add deployment scripts for your chosen environment (Dev, QA, Staging, Production)
+  displayName: "Deploy Application"
