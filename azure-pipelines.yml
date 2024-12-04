@@ -2,7 +2,7 @@ trigger:
 - main  # Automatically triggers the pipeline on pushes to the main branch
 
 pool:
-  name: 'Self-Hosted'
+  name: 'default'
 
 variables:
   buildConfiguration: 'Release'
@@ -32,14 +32,14 @@ steps:
   displayName: "Install Frontend Dependencies"
 
 # Step 5: Run Linting and Static Code Analysis with SonarQube
-- task: SonarQubePrepare@4
+- task: SonarQubePrepare@6
   displayName: "Prepare SonarQube Analysis"
   inputs:
-    SonarQube: 'SonarQubeConnection'  # Replace with your SonarQube service connection name
+    SonarQube: 'SonarQube'  # Replace with your SonarQube service connection name
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: '<YourProjectKey>'  # Replace with your unique project key
-    cliProjectName: '<YourProjectName>'  # Replace with your project name
+    cliProjectKey: 'Project'  # Replace with your unique project key
+    cliProjectName: 'Project'  # Replace with your project name
     cliProjectVersion: '1.0'
 
 - script: |
@@ -52,10 +52,10 @@ steps:
     npm run lint
   displayName: "Run Frontend Linting"
 
-- task: SonarQubeAnalyze@4
+- task: SonarQubeAnalyze@6
   displayName: "Run SonarQube Analysis"
 
-- task: SonarQubePublish@4
+- task: SonarQubePublish@6
   displayName: "Publish SonarQube Results"
   inputs:
     pollingTimeoutSec: '300'
