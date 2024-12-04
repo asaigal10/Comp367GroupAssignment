@@ -5,5 +5,5 @@ pool:
   name: 'default'
 
 steps:
-- task: Checkout@1
+- checkout: self
   displayName: "Checkout the Code Repository"
