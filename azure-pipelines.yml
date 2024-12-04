@@ -1,72 +1,9 @@
 trigger:
-- main  # Automatically triggers the pipeline on pushes to the main branch
+- main
 
 pool:
-  name: 'default' 
-
-variables:
-  buildConfiguration: 'Release'
+  name: 'default'
 
 steps:
-# Step 1: Checkout Code
-- task: Checkout@1
-  displayName: "Checkout the Code Repository"
-
-# Step 2: Install Node.js
-- task: UseNode@1
-  displayName: "Setup Node.js"
-  inputs:
-    versionSpec: '22.x'  
-    checkLatest: true
-
-# Step 3: Install Dependencies for Backend
-- script: |
-    cd backend
-    npm install
-  displayName: "Install Backend Dependencies"
-
-# Step 4: Install Dependencies for Frontend
-- script: |
-    cd frontend
-    npm install
-  displayName: "Install Frontend Dependencies"
-
-# Step 5: Run Backend Tests
-- script: |
-    cd backend
-    npm run test -- --coverage
-  displayName: "Run Backend Tests and Generate Coverage"
-
-# Step 6: Run Frontend Tests
-- script: |
-    cd frontend
-    npm run test -- --coverage
-  displayName: "Run Frontend Tests and Generate Coverage"
-
-# Step 7: Publish Test Results
-- task: PublishTestResults@2
-  displayName: "Publish Test Results"
-  inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: '**/test-results.xml'
-    failTaskOnFailedTests: true
-
-# Step 8: Publish Code Coverage Report
-- task: PublishCodeCoverageResults@1
-  displayName: "Publish Code Coverage"
-  inputs:
-    codeCoverageTool: 'cobertura'
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/**/CoverageReport'
-
-# Step 9: Build Frontend for Production
-- script: |
-    cd frontend
-    npm run build
-  displayName: "Build Frontend for Production"
-
-# Step 10: Deploy Backend and Frontend
-- script: |
-    echo "Deploying Backend and Frontend"
-    # Add deployment scripts for your chosen environment (Dev, QA, Staging, Production)
-  displayName: "Deploy Application"
+- script: echo "Pipeline Test"
+  displayName: "Testing Pipeline"
