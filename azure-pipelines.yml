@@ -2,7 +2,7 @@ trigger:
 - main  # Triggers pipeline on commits to the main branch
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: default
 
 steps:
 # Step 1: Checkout Code
