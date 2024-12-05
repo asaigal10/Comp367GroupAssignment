@@ -12,7 +12,7 @@ steps:
 # Step 2: Use a Compatible Node.js Version
 - task: UseNode@1
   inputs:
-    versionSpec: '16.x'  # Use a stable Node.js version (16.x is widely supported)
+    versionSpec: '16.14.0'  
     checkLatest: true
 
 # Step 3: Install Backend Dependencies
