@@ -8,9 +8,10 @@ steps:
   displayName: "Checkout the Code Repository"
 
 - task: UseNode@1
-  displayName: "Setup Node.js Environment"
   inputs:
+    versionSpec: '22.8.0' 
     checkLatest: true
+
 
 - script: |
     cd backend
