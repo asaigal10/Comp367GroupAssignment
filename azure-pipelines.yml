@@ -32,12 +32,14 @@ steps:
     cd backend
     npm test -- --coverage
   displayName: "Run Backend Tests"
+  condition: succeededOrFailed()
 
 # Step 6: Run Frontend Tests
 - script: |
     cd frontend
     npm test -- --coverage
   displayName: "Run Frontend Tests"
+  condition: succeededOrFailed()
 
 # Step 7: Build Backend for Production
 - script: |
