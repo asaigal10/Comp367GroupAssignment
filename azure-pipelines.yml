@@ -24,11 +24,6 @@ steps:
   displayName: "Install Frontend Dependencies"
 
 - script: |
-    cd backend
-    npm run build
-  displayName: "Build Backend for Production"
-
-- script: |
     cd frontend
     npm run build
   displayName: "Build Frontend for Production"
