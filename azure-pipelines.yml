@@ -10,7 +10,6 @@ steps:
 - task: UseNode@1
   displayName: "Setup Node.js Environment"
   inputs:
-    versionSpec: '16.x'
     checkLatest: true
 
 - script: |
