@@ -8,8 +8,8 @@ module.exports = {
       [
         "jest-junit",
         {
-          outputDirectory: "./test-results",
-          outputName: "test.xml",
+          outputDirectory: "./frontned",
+          outputName: "junit.xml",
         },
       ],
     ],
