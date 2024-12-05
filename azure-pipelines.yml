@@ -1,33 +1,39 @@
 trigger:
 - main  
+
 pool:
   name: 'default'  
 
 steps:
+# Step 1: Checkout the Code Repository
 - checkout: self
   displayName: "Checkout the Code Repository"
 
+# Step 2: Use a Compatible Node.js Version
 - task: UseNode@1
   inputs:
-    versionSpec: '22.8.0' 
+    versionSpec: '16.x'  # Use a stable Node.js version (16.x is widely supported)
     checkLatest: true
 
-
+# Step 3: Install Backend Dependencies
 - script: |
     cd backend
     npm install
   displayName: "Install Backend Dependencies"
 
+# Step 4: Install Frontend Dependencies
 - script: |
     cd frontend
     npm install
   displayName: "Install Frontend Dependencies"
 
+# Step 5: Build Frontend for Production
 - script: |
     cd frontend
     npm run build
   displayName: "Build Frontend for Production"
 
+# Step 6: Publish Test Results
 - task: PublishTestResults@2
   displayName: "Publish Test Results"
   inputs:
@@ -35,23 +41,27 @@ steps:
     testResultsFiles: '**/test-results.xml'
     failTaskOnFailedTests: true
 
-- task: PublishCodeCoverageResults@2
+# Step 7: Publish Code Coverage
+- task: PublishCodeCoverageResults@1
   displayName: "Publish Code Coverage"
   inputs:
     codeCoverageTool: 'cobertura'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
     reportDirectory: '$(System.DefaultWorkingDirectory)/**/CoverageReport'
 
+# Step 8: Deploy to QA Environment
 - script: |
     echo "Deploying QA Environment"
   displayName: "Deploy Application"
 
+# Step 9: Publish Frontend Build Artifacts
 - task: PublishBuildArtifacts@1
   displayName: "Publish Frontend Build Artifacts"
   inputs:
     PathtoPublish: 'frontend/build'  
     ArtifactName: 'FrontendBuild'
 
+# Step 10: Publish Backend Build Artifacts
 - task: PublishBuildArtifacts@1
   displayName: "Publish Backend Build Artifacts"
   inputs:
